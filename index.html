@@ -11,6 +11,7 @@
             --secondary-color: #00bcd4;
             --danger-color: #d32f2f;
             --edit-color: #ffab40;
+            --copy-color: #2196F3;
             --telegram-color: #0088cc;
             --bg-color-start: #0c0c0c;
             --bg-color-mid: #050505;
@@ -68,6 +69,7 @@
             color: var(--text-secondary);
             font-size: 0.75rem;
             font-family: 'Courier New', Courier, monospace;
+            z-index: 100;
         }
 
         .container {
@@ -84,76 +86,75 @@
         }
         
         #dataTableContainer {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 1.5rem;
+            background: transparent;
+            border: none;
+            padding: 0;
             margin-bottom: 2.5rem;
             display: none;
         }
-
+        
         #dataTableContainer h2 {
             color: var(--primary-color);
             text-align: center;
             margin-bottom: 1.5rem;
         }
-        
-        .table-wrapper {
-            overflow-x: auto;
-        }
-        
-        .table-wrapper::-webkit-scrollbar {
-            height: 8px;
-            background-color: rgba(0, 0, 0, 0.2);
-        }
-        .table-wrapper::-webkit-scrollbar-track {
-            background-color: transparent;
-            border-radius: 10px;
-        }
-        .table-wrapper::-webkit-scrollbar-thumb {
-            background-color: var(--primary-color);
-            border-radius: 10px;
-            border: 2px solid transparent;
-            background-clip: content-box;
-        }
-        .table-wrapper::-webkit-scrollbar-thumb:hover {
-            background-color: var(--secondary-color);
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            color: var(--text-primary);
-            white-space: nowrap;
+
+        .data-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.5s ease-out;
         }
 
-        th, td {
-            padding: 0.8rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--glass-border);
+        .data-card-body {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        th {
-            color: var(--text-secondary);
+        .data-point {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .data-point .label {
             font-size: 0.85rem;
-            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
             text-transform: uppercase;
         }
-        
-        td {
-            font-size: 0.95rem;
+
+        .data-point .value {
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .data-card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid var(--glass-border);
         }
         
         .action-btn {
             background: transparent;
             border: 1px solid var(--glass-border);
             color: white;
-            padding: 0.4rem 0.8rem;
-            margin: 0 0.2rem;
+            padding: 0.5rem 1rem;
+            margin: 0;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .action-btn i {
+            margin-right: 8px;
         }
         
         .edit-btn { border-color: var(--edit-color); color: var(--edit-color); }
@@ -161,6 +162,10 @@
         
         .delete-btn { border-color: var(--danger-color); color: var(--danger-color); }
         .delete-btn:hover { background: var(--danger-color); color: white; }
+
+        .copy-btn { border-color: var(--copy-color); color: var(--copy-color); }
+        .copy-btn:hover { background: var(--copy-color); color: white; }
+
 
         .role-header, .form-container, .program-selector .program-btn {
             background: var(--glass-bg);
@@ -207,7 +212,7 @@
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 1rem;
             justify-content: center;
-            margin-bottom: 1rem; /* Adjusted for program-actions below */
+            margin-bottom: 1rem;
         }
 
         .program-btn {
@@ -404,36 +409,31 @@
             margin-right: 8px;
         }
 
-        /* Styles for the buttons under program-selector */
-        .program-actions {
+        .initial-actions {
             display: flex;
             justify-content: center;
             gap: 1rem;
             margin-top: 2rem;
-            margin-bottom: 2.5rem; /* Added margin-bottom for spacing */
-        }
-
-        .program-actions .submit-btn {
-            margin: 0; /* Override default margin for submit-btn */
-            width: auto; /* Override default block display width */
-        }
-
-        /* Group for buttons when table is visible */
-        .table-action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 2rem; /* Spacing above these buttons */
             margin-bottom: 2.5rem;
         }
 
-        .table-action-buttons .submit-btn {
+        .initial-actions .submit-btn {
             margin: 0;
             width: auto;
         }
 
+        .top-action-buttons {
+            display: none; /* Hidden by default */
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
 
-        /* Message for no data */
+        .top-action-buttons .submit-btn {
+            margin: 0;
+            width: auto;
+        }
+
         .no-data-message {
             text-align: center;
             color: var(--text-secondary);
@@ -443,33 +443,22 @@
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: 15px;
-            display: none; /* Hidden by default */
+            display: none;
         }
         .no-data-message.active {
             display: block;
         }
 
-        @media (max-width: 768px) {
-            .table-wrapper {
-                font-size: 0.85rem;
-            }
-             th, td {
-                padding: 0.6rem 0.5rem;
-            }
-            .action-btn {
-                padding: 0.3rem 0.6rem;
-            }
-        }
-        
         @media (max-width: 600px) {
             body { padding: 1rem 0.5rem; }
             h1 { font-size: 1.8rem; }
             .program-selector { grid-template-columns: 1fr 1fr; }
             .form-grid { grid-template-columns: 1fr; }
             .form-container { padding: 1.5rem; }
-            #dataTableContainer { padding: 1rem; }
+            .data-card-body { grid-template-columns: 1fr; }
+            #dataTableContainer { padding: 1rem 0; }
             #deviceIdDisplay { font-size: 0.65rem; padding: 0.3rem 0.6rem; }
-            .program-actions, .table-action-buttons { flex-direction: column; }
+            .initial-actions, .top-action-buttons { flex-direction: column; }
         }
     </style>
 </head>
@@ -493,9 +482,14 @@
     <div class="content-wrap">
         <div class="container">
             <h1>
-                <span></i> Wipro Hiring Tracker</span>
+                <span>Wipro Hiring Tracker</span>
             </h1>
             
+            <div class="top-action-buttons" id="topActionButtons">
+                <button class="submit-btn" id="submitAnotherBtn">Submit Another Response</button>
+                <button class="submit-btn" id="viewAnalysisBtn" style="background: linear-gradient(45deg, var(--secondary-color), #00d4a1);">View Analysis from All Students</button>
+            </div>
+
             <div class="program-selector" id="programSelector">
                 <button class="program-btn" data-program="WILP"><span>WILP</span></button>
                 <button class="program-btn" data-program="Elite"><span>Elite</span></button>
@@ -504,7 +498,7 @@
                 <button class="program-btn" data-program="NTH"><span>Elite NTH</span></button>
             </div>
 
-            <div class="program-actions" id="programActions">
+            <div class="initial-actions" id="initialActions">
                 <button class="submit-btn" id="myDataBtn" style="background: linear-gradient(45deg, #2196F3, #26C6DA);">My Data</button>
                 <button class="submit-btn" id="viewAnalysisBtnPrimary" style="background: linear-gradient(45deg, var(--secondary-color), #00d4a1);">View Analysis from All Students</button>
             </div>
@@ -515,14 +509,7 @@
 
             <div id="dataTableContainer">
                 <h2>Submitted Records</h2>
-                <div class="table-wrapper">
-                    <table id="recordsTable">
-                    </table>
-                </div>
-                <div class="table-action-buttons">
-                    <button class="submit-btn" id="submitAnotherBtn">Submit Another Response</button>
-                    <button class="submit-btn" id="viewAnalysisBtnTable" style="background: linear-gradient(45deg, var(--secondary-color), #00d4a1);">View Analysis from All Students</button>
-                </div>
+                <div id="recordsContainer"></div>
             </div>
 
             <div class="role-header" id="roleHeader">
@@ -567,24 +554,19 @@
         const db = getFirestore(app);
         
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if we are being redirected from the initialization page
             if (sessionStorage.getItem('fromPage1') === 'true') {
-                sessionStorage.removeItem('fromPage1'); // Use the flag once and remove it
-
-                // If page1 set the ID to 'NAN', it's a new user. Generate a real ID.
+                sessionStorage.removeItem('fromPage1'); 
                 if (localStorage.getItem('deviceID') === 'NAN') {
                     const newDeviceId = Math.floor(10000 + Math.random() * 90000).toString();
                     localStorage.setItem('deviceID', newDeviceId);
                 }
             } else {
-                // This is a direct visit. If no ID exists, redirect to the initializer.
                 if (!localStorage.getItem('deviceID')) {
-                    window.location.href = 'https://9000-firebase-wipro-data-1752237543805.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev/?monospaceUid=199990';
-                    return; // Stop script execution to prevent errors before redirect
+                    const newDeviceId = Math.floor(10000 + Math.random() * 90000).toString();
+                    localStorage.setItem('deviceID', newDeviceId);
                 }
             }
             
-            // At this point, a valid deviceID is guaranteed to be in localStorage.
             let deviceId = localStorage.getItem('deviceID');
             
             const deviceIdDisplay = document.getElementById('deviceIdDisplay');
@@ -607,12 +589,13 @@
                 currentRoleTitle: document.getElementById('currentRoleTitle'),
                 changeRoleBtn: document.getElementById('changeRoleBtn'),
                 dataTableContainer: document.getElementById('dataTableContainer'),
-                recordsTable: document.getElementById('recordsTable'),
+                recordsContainer: document.getElementById('recordsContainer'),
+                topActionButtons: document.getElementById('topActionButtons'),
                 submitAnotherBtn: document.getElementById('submitAnotherBtn'),
-                viewAnalysisBtnPrimary: document.getElementById('viewAnalysisBtnPrimary'), // For program selector view
-                viewAnalysisBtnTable: document.getElementById('viewAnalysisBtnTable'),   // For table view
+                viewAnalysisBtn: document.getElementById('viewAnalysisBtn'),
+                initialActions: document.getElementById('initialActions'),
                 myDataBtn: document.getElementById('myDataBtn'), 
-                programActions: document.getElementById('programActions'),
+                viewAnalysisBtnPrimary: document.getElementById('viewAnalysisBtnPrimary'),
                 noDataMessage: document.getElementById('noDataMessage') 
             };
 
@@ -621,18 +604,27 @@
                 submitBtns: {'WILP':document.getElementById('wilp-submit'),'Elite':document.getElementById('elite-submit'),'EliteExclusive':document.getElementById('exclusive-submit'),'OnCampus':document.getElementById('campus-submit'),'NTH':document.getElementById('nth-submit')}
             };
             
-            const tableHeaders = ['Program', 'Registration', 'Assessment', 'TR/Tech', 'HR', 'Offer', 'BGV', 'Joining', 'Location', 'Actions'];
-            
+            const standardDisplayHeaders = ['Program', 'Registration', 'Assessment', 'TR/Tech', 'HR', 'Offer', 'BGV', 'Joining', 'Location'];
+
             const fieldToHeaderMap = {
                 'wilp-registration': 'Registration', 'campus-registration': 'Registration', 'elite-application': 'Registration', 'exclusive-application': 'Registration', 'nth-application': 'Registration',
                 'wilp-assessment': 'Assessment', 'campus-assessment': 'Assessment', 'elite-assessment': 'Assessment', 'exclusive-assessment': 'Assessment', 'nth-assessment': 'Assessment',
-                'campus-technical': 'TR/Tech', 'elite-tr': 'TR/Tech', 'exclusive-tr': 'TR/Tech', 'nth-tr': 'TR/Tech', 'wilp-business': 'TR/Tech',
+                'wilp-business': 'TR/Tech', 'campus-technical': 'TR/Tech', 'elite-tr': 'TR/Tech', 'exclusive-tr': 'TR/Tech', 'nth-tr': 'TR/Tech',
                 'campus-hr': 'HR', 'elite-hr': 'HR', 'exclusive-hr': 'HR', 'nth-hr': 'HR',
                 'wilp-offer': 'Offer', 'campus-offer': 'Offer', 'elite-offer': 'Offer', 'exclusive-offer': 'Offer', 'nth-offer': 'Offer',
                 'wilp-bg-check': 'BGV', 'campus-bg-check': 'BGV', 'elite-bgv': 'BGV', 'exclusive-bgv': 'BGV', 'nth-bgv': 'BGV',
                 'wilp-joining': 'Joining', 'campus-onboarding': 'Joining', 'elite-final-joining': 'Joining', 'exclusive-final-joining': 'Joining', 'nth-final-joining': 'Joining',
                 'wilp-location': 'Location', 'campus-location': 'Location', 'elite-location': 'Location', 'exclusive-location': 'Location', 'nth-location': 'Location',
             };
+
+            const headerToFieldMap = {};
+            for (const field in fieldToHeaderMap) {
+                const header = fieldToHeaderMap[field];
+                if (!headerToFieldMap[header]) {
+                    headerToFieldMap[header] = [];
+                }
+                headerToFieldMap[header].push(field);
+            }
 
             let currentConfirmCallback = null;
             let editingProgram = null;
@@ -746,9 +738,9 @@
                                 obj[key] = allData[key];
                                 return obj;
                             }, {});
-                        renderDataTable(currentUserData);
+                        renderDataCards(currentUserData);
                     } else {
-                        renderDataTable({}); // Render empty table if no data
+                        renderDataCards({});
                     }
                 } catch (error) {
                     console.error("Error fetching data:", error);
@@ -756,94 +748,131 @@
                 }
             };
 
-            const renderDataTable = (data) => {
+            const renderDataCards = (data) => {
                 const records = Object.values(data);
                 
                 if (records.length > 0) {
                     ui.dataTableContainer.style.display = 'block';
-                    ui.submitAnotherBtn.style.display = 'inline-block'; // Now part of table-action-buttons
-                    ui.viewAnalysisBtnTable.style.display = 'inline-block'; // Show analysis button here
+                    ui.topActionButtons.style.display = 'flex';
                     ui.programSelector.style.display = 'none';
-                    ui.programActions.style.display = 'none';
-                    ui.noDataMessage.classList.remove('active'); // Hide no data message
+                    ui.initialActions.style.display = 'none';
+                    ui.noDataMessage.classList.remove('active');
                 } else {
                     ui.dataTableContainer.style.display = 'none';
-                    ui.submitAnotherBtn.style.display = 'none';
-                    ui.viewAnalysisBtnTable.style.display = 'none'; // Hide analysis button
-                    ui.programSelector.style.display = 'grid'; // Show program selector
-                    ui.programActions.style.display = 'flex'; // Show program actions
-                    ui.noDataMessage.classList.add('active'); // Show no data message
+                    ui.topActionButtons.style.display = 'none';
+                    ui.programSelector.style.display = 'grid';
+                    ui.initialActions.style.display = 'flex';
+                    ui.noDataMessage.classList.add('active');
                 }
                 
-                const headerToFieldMap = {};
-                for(const field in fieldToHeaderMap){
-                    const header = fieldToHeaderMap[field];
-                    if(!headerToFieldMap[header]) headerToFieldMap[header] = [];
-                    headerToFieldMap[header].push(field);
-                }
-
-                let tableHTML = `<thead><tr>${tableHeaders.map(h => `<th>${h}</th>`).join('')}</tr></thead>`;
-                
-                tableHTML += '<tbody>';
-                tableHTML += records.map(record => {
-                    let rowHTML = `<tr>`;
-                    rowHTML += `<td>${programData.titles[record.program]}</td>`;
-
-                    tableHeaders.slice(1, -1).forEach(header => {
-                        const possibleFields = headerToFieldMap[header] || [];
+                let cardsHTML = '';
+                records.forEach(record => {
+                    let bodyHTML = '';
+                    
+                    standardDisplayHeaders.forEach(header => {
                         let value = 'N/A';
-                        for(const field of possibleFields){
-                            if(record.formData[field]){
-                                value = record.formData[field];
+                        if (header === 'Program') {
+                            value = programData.titles[record.program] || 'N/A';
+                        } else {
+                            const possibleFields = headerToFieldMap[header] || [];
+                            for (const field of possibleFields) {
+                                if (record.formData[field]) {
+                                    value = record.formData[field];
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        bodyHTML += `
+                            <div class="data-point">
+                                <span class="label">${header}</span>
+                                <span class="value">${value}</span>
+                            </div>
+                        `;
+                    });
+
+                    cardsHTML += `
+                        <div class="data-card" data-program="${record.program}">
+                            <div class="data-card-body">
+                                ${bodyHTML}
+                            </div>
+                            <div class="data-card-actions">
+                                <button class="action-btn copy-btn" data-id="${record.program}"><i class="fas fa-copy"></i> Copy</button>
+                                <button class="action-btn edit-btn" data-id="${record.program}"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn delete-btn" data-id="${record.program}"><i class="fas fa-trash"></i> Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                ui.recordsContainer.innerHTML = cardsHTML;
+            };
+
+            const handleCardActions = (e) => {
+                const target = e.target.closest('.action-btn');
+                if (!target) return;
+
+                const program = target.dataset.id;
+                if (target.classList.contains('edit-btn')) {
+                    handleEdit(program);
+                } else if (target.classList.contains('delete-btn')) {
+                    handleDelete(program);
+                } else if (target.classList.contains('copy-btn')) {
+                    handleCopy(program);
+                }
+            };
+
+            const handleCopy = (program) => {
+                const recordToCopy = currentUserData[program];
+                if (!recordToCopy) return;
+
+                let textToCopy = '';
+                standardDisplayHeaders.forEach(header => {
+                    let value = 'N/A';
+                     if (header === 'Program') {
+                        value = programData.titles[recordToCopy.program] || 'N/A';
+                    } else {
+                        const possibleFields = headerToFieldMap[header] || [];
+                        for (const field of possibleFields) {
+                            if (recordToCopy.formData[field]) {
+                                value = recordToCopy.formData[field];
                                 break;
                             }
                         }
-                        rowHTML += `<td>${value}</td>`;
-                    });
+                    }
+                    textToCopy += `${header}: ${value}\n`;
+                });
 
-                    rowHTML += `<td>
-                                    <button class="action-btn edit-btn" data-id="${record.program}"><i class="fas fa-edit"></i> Edit</button>
-                                    <button class="action-btn delete-btn" data-id="${record.program}"><i class="fas fa-trash"></i> Delete</button>
-                                </td>`;
-                    rowHTML += `</tr>`;
-                    return rowHTML;
-                }).join('');
-                tableHTML += '</tbody>';
-
-                ui.recordsTable.innerHTML = tableHTML;
-            };
-
-            const handleTableActions = (e) => {
-                if (e.target.closest('.edit-btn')) {
-                    const program = e.target.closest('.edit-btn').dataset.id;
-                    handleEdit(program);
-                }
-                if (e.target.closest('.delete-btn')) {
-                    const program = e.target.closest('.delete-btn').dataset.id;
-                    handleDelete(program);
-                }
+                navigator.clipboard.writeText(textToCopy.trim()).then(() => {
+                    showMessage("Your data was copied. You can paste it anywhere you want.", "Copied Successfully");
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    showMessage('Failed to copy data.');
+                });
             };
             
             const handleEdit = (program) => {
-                const recordToEdit = currentUserData[program];
-                if (!recordToEdit) return;
+                showConfirmation("Are you sure you want to edit this record?", () => {
+                    const recordToEdit = currentUserData[program];
+                    if (!recordToEdit) return;
 
-                editingProgram = program;
-                ui.dataTableContainer.style.display = 'none';
-                // The submitAnotherBtn and viewAnalysisBtnTable are inside dataTableContainer so they'll hide automatically.
-                ui.programActions.style.display = 'none'; 
+                    editingProgram = program;
+                    ui.dataTableContainer.style.display = 'none';
+                    ui.topActionButtons.style.display = 'none';
+                    ui.initialActions.style.display = 'none'; 
 
-                selectProgram(program, false); // Pass false to not clear the form
-                
-                const form = document.getElementById(`${program}-form`);
-                for(const key in recordToEdit.formData) {
-                    const input = form.querySelector(`#${key}`);
-                    if (input) {
-                        input.value = recordToEdit.formData[key];
+                    selectProgram(program, false);
+                    
+                    const form = document.getElementById(`${program}-form`);
+                    for(const key in recordToEdit.formData) {
+                        const input = form.querySelector(`#${key}`);
+                        if (input) {
+                            input.value = recordToEdit.formData[key];
+                        }
                     }
-                }
-                validateForm(program);
-                programData.submitBtns[program].textContent = "Update";
+                    validateForm(program);
+                    programData.submitBtns[program].textContent = "Update";
+                });
             };
 
             const handleDelete = (program) => {
@@ -876,7 +905,6 @@
                 const inputs = Array.from(form.querySelectorAll('input'));
                 
                 const hasRequiredValue = inputs.some(input => {
-                    // Check if the input is not optional and has a value
                     return !input.parentElement.querySelector('.optional-text') && input.value.trim() !== '';
                 });
 
@@ -901,7 +929,8 @@
             
             const selectProgram = (program, shouldClear = true) => {
                 ui.programSelector.style.display = 'none';
-                ui.programActions.style.display = 'none'; 
+                ui.initialActions.style.display = 'none'; 
+                ui.topActionButtons.style.display = 'none';
                 ui.forms.forEach(form => form.classList.remove('active'));
                 ui.noDataMessage.classList.remove('active'); 
                 document.getElementById(`${program}-form`).classList.add('active');
@@ -920,7 +949,7 @@
                         programData.submitBtns[program].textContent = "Submit";
                     }
                 });
-                fetchAndRenderData(); // This will decide whether to show program selector or data table
+                fetchAndRenderData();
             };
 
             const handleChangeRole = () => {
@@ -967,11 +996,10 @@
             };
             
             const showProgramSelectorView = () => {
-                ui.programSelector.style.display = 'grid';
-                ui.programActions.style.display = 'flex'; 
+                ui.topActionButtons.style.display = 'none';
                 ui.dataTableContainer.style.display = 'none';
-                ui.submitAnotherBtn.style.display = 'none';
-                ui.viewAnalysisBtnTable.style.display = 'none'; // Hide table view analysis button
+                ui.programSelector.style.display = 'grid';
+                ui.initialActions.style.display = 'flex'; 
                 ui.roleHeader.style.display = 'none';
                 ui.forms.forEach(form => form.classList.remove('active'));
                 if (Object.keys(currentUserData).length === 0) {
@@ -984,29 +1012,35 @@
             const loadInitialState = async () => {
                 await saveUserIpInfo();
                 await fetchAndRenderData(); 
-                ui.recordsTable.addEventListener('click', handleTableActions);
+                ui.recordsContainer.addEventListener('click', handleCardActions);
                 ui.submitAnotherBtn.addEventListener('click', showProgramSelectorView);
                 
                 ui.myDataBtn.addEventListener('click', async () => {
                     await fetchAndRenderData(); 
                 });
 
-                // Handler for the "View Analysis" button in the primary program actions section
-                ui.viewAnalysisBtnPrimary.addEventListener('click', () => {
-                    showMessage("Soon you will get updates related to the Wipro hiring analysis!");
-                });
+                // MODIFIED: This function now handles navigation to the dashboard page using sessionStorage
+                const analysisMessageHandler = () => {
+                    const currentDeviceId = localStorage.getItem('deviceID');
+                    if (currentDeviceId) {
+                        // Store ID in session storage to be read by the next page
+                        sessionStorage.setItem('wiproTrackerDeviceId', currentDeviceId);
+                        // Navigate to dashboard.html without a URL parameter
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        showMessage("Could not retrieve your User ID. Please refresh the page.", "Error");
+                    }
+                };
 
-                // Handler for the "View Analysis" button displayed with the table
-                ui.viewAnalysisBtnTable.addEventListener('click', () => {
-                    showMessage("Soon you will get updates related to the Wipro hiring analysis!");
-                });
+                ui.viewAnalysisBtnPrimary.addEventListener('click', analysisMessageHandler);
+                ui.viewAnalysisBtn.addEventListener('click', analysisMessageHandler);
             };
             
             document.querySelectorAll('.program-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     if (btn.disabled) return;
                     
-                    const noticeText = "Dear All, We are conducting a detailed analysis of the Wipro India hiring process, based on a survey of information from all participating students. Kindly ensure that all the details you provide on this website are accurate and complete.";
+                    const noticeText = "Dear All, We are conducting a detailed analysis of the Wipro India hiring process, based on information from all participating students. Kindly ensure that all the details you provide on this website are accurate and complete.";
                     
                     showInstruction(noticeText, () => {
                         ui.dataTableContainer.style.display = 'none';
@@ -1031,7 +1065,6 @@
                     showMessage('This browser feature is restricted for security reasons.');
                 }
             });
-
         });
     </script>
 </body>
